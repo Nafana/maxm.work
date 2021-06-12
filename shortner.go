@@ -17,6 +17,13 @@ const (
 	ShortnerURLCollection = "shortner"
 )
 
+// Writes a simple text reponse with a status code to the response
+func WriteTextResponse(w http.ResponseWriter, data []byte, code int) {
+	w.WriteHeader(code)
+	w.Write(data)
+}
+
+// Redirect a request to a URL mapped from the provided slug
 func (app *App) Redirect(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	s := &Slug{Name: params["slug"]}
@@ -24,12 +31,12 @@ func (app *App) Redirect(w http.ResponseWriter, r *http.Request) {
 	// Validate slug before attempting to find objects in the database
 	if err := s.ValidateSlugLength(); err != nil {
 		log.WithError(err).Warn(fmt.Sprintf("Client requested slug with improper length=%d", len(s.Name)))
-		w.Write([]byte("400 - Invalud slug length"))
+		WriteTextResponse(w, []byte("400 - Invalid slug length"), http.StatusBadRequest)
 		return
 	}
 	if err := s.ValidateSlugFormat(); err != nil {
 		log.WithError(err).Warn(fmt.Sprintf("Client requested slug=\"%s\" with improper format", s.Name))
-		w.Write([]byte("400 - Invalid slug format"))
+		WriteTextResponse(w, []byte("400 - Invalid slug format"), http.StatusBadRequest)
 		return
 	}
 
@@ -40,13 +47,13 @@ func (app *App) Redirect(w http.ResponseWriter, r *http.Request) {
 		// Document wasn't found in the database
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			log.WithError(err).Warn(fmt.Sprintf("Failed finding document for slug=\"%s\" in database", s.Name))
-			w.Write([]byte("Slug did not exist"))
+			WriteTextResponse(w, []byte("Slug did not exist"), http.StatusNotFound)
 			return
 		}
 
 		// Handle an unknown error from the db
 		log.WithError(err).Error(fmt.Sprintf("Failed querying database for slug=\"%s\" document", s.Name))
-		w.Write([]byte("500 - Failed to process slug request"))
+		WriteTextResponse(w, []byte("500 - Failed to process slug request"), http.StatusInternalServerError)
 		return
 	}
 
