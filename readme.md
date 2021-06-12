@@ -6,16 +6,34 @@ Very simple URL shortner to make links on my resume appear more unique / brandab
 
 ## Configuring
 
-Simply configure the `.env` file after creating it with `cp .env.sample .env`
+Simply configure the `.env` file after creating it
+
+```
+cp .env.sample .env
+```
 
 ## Building
 
 If you want to build the code locally simply run `make`
 
-To build with Docker run `docker build -t max.work .`
+To build with Docker run
+
+```
+docker build -t max.work .
+```
 
 ## Running
 
 To run locally `./bin/max.work`
 
-To run Docker image with STDIN attached `docker run -it --env-file ./".env" -p 3030:3030  max.work:latest`
+To run Docker image detached
+
+```
+docker run -d --env-file ./.env -p 3030:3030 max.work:latest
+```
+
+To run Docker image with STDIN attached
+
+```
+docker run -it --env-file ./.env -p 3030:3030 max.work:latest
+```
