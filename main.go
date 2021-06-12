@@ -29,7 +29,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	app.DB, err = mongo.Connect(ctx, options.Client().ApplyURI(BuildDatabaseURI(
-		config.DatabaseUsername, config.DatabasePassword)))
+		config.DatabaseUsername, config.DatabasePassword, config.DatabaseHost, config.DatabaseInitial)))
 	if err != nil {
 		log.WithError(err).Fatal("Failed to establish connection with database")
 	}

@@ -11,6 +11,8 @@ type AppConfig struct {
 	Port             string
 	DatabaseUsername string
 	DatabasePassword string
+	DatabaseHost     string
+	DatabaseInitial  string
 }
 
 type App struct {
@@ -22,9 +24,12 @@ func (app *AppConfig) Load() *AppConfig {
 	app.Port = os.Getenv("PORT")
 	app.DatabaseUsername = os.Getenv("DB_USER")
 	app.DatabasePassword = os.Getenv("DB_PASSWORD")
+	app.DatabaseHost = os.Getenv("DB_HOST")
+	app.DatabaseInitial = os.Getenv("DB_INITIAL_DB")
 	return app
 }
 
-func BuildDatabaseURI(user string, password string) string {
-	return fmt.Sprintf("mongodb+srv://%s:%s@shortner-cluster-0.ouu65.mongodb.net/maxm-work?retryWrites=true&w=majority", user, password)
+func BuildDatabaseURI(user string, password string, host string, db string) string {
+	return fmt.Sprintf("mongodb+srv://%s:%s@%s/%s?retryWrites=true&w=majority",
+		user, password, host, db)
 }
